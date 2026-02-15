@@ -1,0 +1,36 @@
+# UI를 Ingress로 외부 노출. /api/run → 에이전트, /api/apps → Session Service(세션·이벤트 API).
+# Kong Gateway(Kong Ingress Controller) 등 사용 시 ingressClassName 지정. 설치 방법은 KONG.md 참고.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: block-diagram
+  namespace: block-diagram
+  labels:
+    app.kubernetes.io/name: block-diagram-ingress
+  annotations: {}
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /api/run
+            pathType: Prefix
+            backend:
+              service:
+                name: block-diagram-agent
+                port:
+                  number: 8080
+          - path: /api/apps
+            pathType: Prefix
+            backend:
+              service:
+                name: block-diagram-session-service
+                port:
+                  number: 8081
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: block-diagram-ui
+                port:
+                  number: 80

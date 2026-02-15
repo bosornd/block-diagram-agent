@@ -1,0 +1,21 @@
+# Ollama 서비스 — StatefulSet용 headless. OpenAI 호환 API (port 11434)
+# block-diagram-llm.block-diagram.svc.cluster.local → 파드(block-diagram-llm-0) IP로 해석됨
+# 에이전트: LLM_BASE_URL=http://block-diagram-llm.block-diagram.svc.cluster.local:11434/v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: block-diagram-llm
+  namespace: block-diagram
+  labels:
+    app: block-diagram-llm
+    app.kubernetes.io/part-of: block-diagram
+spec:
+  clusterIP: None
+  ports:
+    - port: 11434
+      targetPort: 11434
+      protocol: TCP
+      name: http
+  selector:
+    app: block-diagram-llm

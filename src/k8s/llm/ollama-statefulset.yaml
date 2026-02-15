@@ -1,0 +1,69 @@
+# Ollama StatefulSet — 안정적인 파드 식별·스토리지, CPU에서 동작, OpenAI 호환 API (port 11434)
+# volumeClaimTemplates로 포드별 PVC 생성 → 재시작 후에도 모델 유지.
+# 에이전트: LLM_BASE_URL=http://block-diagram-llm.block-diagram.svc.cluster.local:11434/v1, LLM_MODEL_NAME=qwen3-coder:30b
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: block-diagram-llm
+  namespace: block-diagram
+  labels:
+    app: block-diagram-llm
+    app.kubernetes.io/part-of: block-diagram
+spec:
+  serviceName: block-diagram-llm
+  replicas: 1
+  selector:
+    matchLabels:
+      app: block-diagram-llm
+  template:
+    metadata:
+      labels:
+        app: block-diagram-llm
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              ollama serve &
+              sleep 20
+              ollama pull qwen3-coder:30b || true
+              wait
+          ports:
+            - containerPort: 11434
+              name: http
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "8Gi"
+              cpu: "2"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 30
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: ollama-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 25Gi

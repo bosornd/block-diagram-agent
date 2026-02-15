@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Block Diagram — 다이어그램 생성</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Block Diagram</h1>
+      <p class="subtitle">각 대화 세션은 하나의 다이어그램입니다.</p>
+    </header>
+
+    <div class="panels">
+      <!-- 왼쪽: 세션 목록 + 대화 -->
+      <aside class="panel-left">
+        <div class="session-toolbar">
+          <button type="button" id="newSession" class="btn btn-primary">새 세션</button>
+          <button type="button" id="deleteSession" class="btn btn-danger" disabled title="현재 세션 삭제">삭제</button>
+        </div>
+        <div class="session-list-wrap">
+          <p id="sessionListEmpty" class="session-list-empty" hidden>세션이 없습니다. 새 세션을 만드세요.</p>
+          <ul id="sessionList" class="session-list" aria-label="대화 세션 목록"></ul>
+        </div>
+        <div class="chat-wrap">
+          <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+          <div class="chat-input-wrap">
+            <textarea id="chatInput" rows="2" placeholder="다이어그램 설명을 입력하세요… (Enter 전송)" disabled></textarea>
+          </div>
+        </div>
+        <div id="chatStatus" class="status" aria-live="polite"></div>
+      </aside>
+
+      <!-- 오른쪽: Mermaid 렌더링 -->
+      <main class="panel-right">
+        <div class="diagram-header">
+          <h2>다이어그램</h2>
+        </div>
+        <div id="diagramContainer" class="diagram-container">
+          <div id="diagramPlaceholder" class="diagram-placeholder">
+            세션을 선택하거나 새로 만들고 대화를 진행하면<br> 여기에 다이어그램이 렌더링됩니다.
+          </div>
+          <div id="diagramViewport" class="diagram-viewport" hidden>
+            <div id="diagram" class="diagram"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

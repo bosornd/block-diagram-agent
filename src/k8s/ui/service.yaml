@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: block-diagram-ui
+  namespace: block-diagram
+  labels:
+    app: block-diagram-ui
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: block-diagram-ui

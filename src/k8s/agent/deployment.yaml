@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: block-diagram-agent
+  namespace: block-diagram
+  labels:
+    app: block-diagram-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: block-diagram-agent
+  template:
+    metadata:
+      labels:
+        app: block-diagram-agent
+    spec:
+      containers:
+        - name: agent
+          image: block-diagram-agent:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: block-diagram-secrets
+                  key: GOOGLE_API_KEY
+            - name: SESSION_SERVICE_URL
+              value: "http://block-diagram-session-service:8081"
+            - name: LLM_BASE_URL
+              value: "http://block-diagram-llm.block-diagram.svc.cluster.local:11434/v1"
+            - name: LLM_MODEL_NAME
+              value: "qwen3-coder:30b"
+            # Gemini 사용 시 위 LLM_* 제거 후 GOOGLE_API_KEY만 사용. in-memory 세션은 SESSION_SERVICE_URL 제거 후 SESSION_USE_MEMORY=true
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: block-diagram-ui
+  namespace: block-diagram
+  labels:
+    app: block-diagram-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: block-diagram-ui
+  template:
+    metadata:
+      labels:
+        app: block-diagram-ui
+    spec:
+      containers:
+        - name: ui
+          image: block-diagram-ui:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "20m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5

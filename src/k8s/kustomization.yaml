@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: block-diagram
+
+resources:
+  - namespace.yaml
+  - secret.yaml
+  - ingress.yaml
+  - postgres
+  - session-service
+  - agent
+  - ui
+  - llm/ollama-service.yaml
+  - llm/ollama-statefulset.yaml
+
+# includeSelectors: false — Deployment/Service selector는 변경 불가(immutable)
+labels:
+  - includeSelectors: false
+    includeTemplates: true
+    pairs:
+      app.kubernetes.io/part-of: block-diagram

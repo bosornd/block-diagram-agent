@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: block-diagram-agent
+  namespace: block-diagram
+  labels:
+    app: block-diagram-agent
+  annotations:
+    # LLM 호출이 길어질 수 있으므로 업스트림 타임아웃 연장 (단위: ms)
+    konghq.com/connect-timeout: "30000"   # 30s
+    konghq.com/read-timeout: "300000"     # 5 min
+    konghq.com/write-timeout: "300000"   # 5 min
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: block-diagram-agent
