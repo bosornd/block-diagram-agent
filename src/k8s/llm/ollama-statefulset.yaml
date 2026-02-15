@@ -1,6 +1,7 @@
 # Ollama StatefulSet — 안정적인 파드 식별·스토리지, CPU에서 동작, OpenAI 호환 API (port 11434)
 # volumeClaimTemplates로 포드별 PVC 생성 → 재시작 후에도 모델 유지.
-# 에이전트: LLM_BASE_URL=http://block-diagram-llm.block-diagram.svc.cluster.local:11434/v1, LLM_MODEL_NAME=qwen3-coder:30b
+# qwen3-coder:30b ≈ 17.7 GiB 필요 → limits.memory 20Gi 이상 (8Gi면 OOM으로 signal: killed).
+# 에이전트: LLM_BASE_URL=.../v1, LLM_MODEL_NAME=qwen3-coder:30b
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -41,10 +42,10 @@ spec:
               mountPath: /root/.ollama
           resources:
             requests:
-              memory: "2Gi"
+              memory: "18Gi"
               cpu: "1"
             limits:
-              memory: "8Gi"
+              memory: "20Gi"
               cpu: "2"
           livenessProbe:
             httpGet:
